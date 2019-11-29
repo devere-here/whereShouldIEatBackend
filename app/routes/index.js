@@ -1,33 +1,17 @@
+const axios = require("axios");
+const get = require("lodash/get");
 const apiRouter = require('express').Router();
-const googleMapsClient = require('../apiClient/googleMaps')
+const { googleMapsUrl, MAPS_API_KEY } = require('../../constants');
 
-apiRouter.post('/hello', (req, res) => {
-  res.send({hello: 'world'})
-});
+apiRouter.post('/placesNearby', async (req, res) => {
+  try {
+    const { latitude, longitude, radius } = req.body
+    const response = await axios.get(`${googleMapsUrl}/place/nearbysearch/json?key=${MAPS_API_KEY}&location=${latitude},${longitude}&radius=${radius}&keyword=restaurant`)
 
-apiRouter.get('/location', (req, res) => {
-  googleMapsClient.geocode({address: '1600 Amphitheatre Parkway, Mountain View, CA'}).asPromise()
-  .then((response) => {
-    console.log(response.json.results);
-    res.json(response)
-  })
-  .catch((err) => {
+    res.json(get(response, ['data', 'results']))
+  } catch (err) {
     res.json(err)
-  });
-})
-
-apiRouter.post('/placesNearby', (req, res) => {
-  const { location, radius } = req.body
-  googleMapsClient.placesNearby({ location: location, radius: radius }).asPromise()
-  .then((response) => {
-    console.log(response.json.results);
-    res.json(response)
-  })
-  .catch((err) => {
-    console.log(err);
-    res.json(err)
-  });
-
+  }
 })
 
 module.exports = apiRouter;
