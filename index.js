@@ -1,12 +1,10 @@
 const express = require('express')
-const MongoClient = require('mongodb').MongoClient
 const bodyParser = require("body-parser")
 const port = 8000
 const routes = require("./app/routes")
 
 const app = express()
 
-// app.use(bodyParser());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
