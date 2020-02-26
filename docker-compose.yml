@@ -1,12 +1,15 @@
-# docker-compose.yml
 version: '3'
 services:
-  database:
-    image: "postgres"
-    env_file:
-      - database.env
-    volumes:
-      - [database-data:/var/lib/postgresql/data/]
+  app:
+    container_name: docker-node-mongo
+    restart: always
+    build: .
     ports:
-      - 5432:5432
-    volumes: [db-data]
+      - '80:8000'
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - '27017:27017'
