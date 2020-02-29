@@ -11,9 +11,15 @@ mongoose
   .then(() => console.log('MongoDb connected'))
   .catch(err => console.log('yikes', err))
 
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-headers', "Origin, X-Requested-With, Content-Type, Accept");
+  next()
+})
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', routes)
 
-app.listen(port, () => console.log('We are live on ' + port));
+app.listen(port, () => console.log('We are here on ' + port));
