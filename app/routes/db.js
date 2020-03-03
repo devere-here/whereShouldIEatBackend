@@ -1,4 +1,5 @@
 const meal = require("../models/post")
+const settings = require("../models/settings")
 const apiRouter = require('express').Router()
 
 apiRouter.get('/recentMeals', async (req, res) => {
@@ -8,10 +9,24 @@ apiRouter.get('/recentMeals', async (req, res) => {
 })
 
 apiRouter.post('/chosenMeal', async (req, res) => {
-  const { restaurant, type } = req.body
+  const { name, id } = req.body
 
-  meal.create({ restaurant, type })
+  meal.create({ name, id })
     .then(newMeal => res.json(newMeal))
+    .catch(err => console.log('ooops', err))
+})
+
+apiRouter.get('/settings', async (req, res) => {
+  settings.find()
+    .then(settings => res.json(settings))
+    .catch(err => console.log('ooops', err))
+})
+
+apiRouter.post('/settings', async (req, res) => {
+  const { distance, repeatRestaurants } = req.body
+
+  settings.create({ distance, repeatRestaurants })
+    .then(settings => res.json(settings))
     .catch(err => console.log('ooops', err))
 })
 

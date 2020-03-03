@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const PostSchema = new mongoose.Schema({
-  restaurant: String,
-  type: String
+  name: String,
+  id: String
 })
 
 const Post = mongoose.model('Post', PostSchema)

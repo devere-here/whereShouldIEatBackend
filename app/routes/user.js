@@ -28,7 +28,7 @@ apiRouter.post('/signup', async (req, res) => {
     })
     .catch(err => console.log('ooops', err))
 
-  user.create({ restaurant, type })
+  user.create({ name, type })
     .then(newMeal => res.json(newMeal))
     .catch(err => console.log('ooops', err))
 })
