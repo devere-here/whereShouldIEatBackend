@@ -1,22 +1,22 @@
-const user = require("../models/user")
+const User = require("../models/user")
 const apiRouter = require('express').Router()
 
-apiRouter.get('/login', async (req, res) => {
+apiRouter.post('/login', async (req, res) => {
   const { username, password } = req.body
-  user.findOne({ username, password })
+  User.findOne({ username, password })
     .then(user => res.json({ success: !!user, error: null }))
     .catch(err => console.log('ooops', err))
 })
 
 apiRouter.post('/signup', async (req, res) => {
   const { username, password } = req.body
-  user.findOne({ username })
+  User.findOne({ username })
     .then(user => {
       if (user) {
         return res.json({ success: false, error: "username already exists" })
       }
 
-      user.create({ username, password })
+      User.create({ username, password })
         .then(newUser => {
           if (newUser) {
             return res.json({ success: true, error: null })
@@ -26,10 +26,6 @@ apiRouter.post('/signup', async (req, res) => {
         })
         .catch(err => console.log('ooops', err))
     })
-    .catch(err => console.log('ooops', err))
-
-  user.create({ name, type })
-    .then(newMeal => res.json(newMeal))
     .catch(err => console.log('ooops', err))
 })
 
