@@ -4,7 +4,11 @@ const apiRouter = require('express').Router()
 apiRouter.post('/login', async (req, res) => {
   const { username, password } = req.body
   User.findOne({ username, password })
-    .then(user => res.json({ success: !!user, error: null }))
+    .then(user => {
+      let success = !!user
+      const error = success ? null : "Sorry, we couldn't find a match"
+      res.json({ success, error })
+    })
     .catch(err => console.log('ooops', err))
 })
 
