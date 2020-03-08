@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 const User = require("../models/user")
 const apiRouter = require('express').Router()
 
@@ -14,23 +15,26 @@ apiRouter.post('/login', async (req, res) => {
 
 apiRouter.post('/signup', async (req, res) => {
   const { username, password } = req.body
-  User.findOne({ username })
-    .then(user => {
-      if (user) {
-        return res.json({ success: false, error: "username already exists" })
-      }
 
-      User.create({ username, password })
-        .then(newUser => {
-          if (newUser) {
-            return res.json({ success: true, error: null })
-          }
+  try {
+    const user = await User.findOne({ username })
+    if (user) {
+      return res.json({ success: false, error: "username already exists" })
+    }
 
-          return res.json({ success: false, error: "User cannot be created at this time" })
-        })
-        .catch(err => console.log('ooops', err))
-    })
-    .catch(err => console.log('ooops', err))
+    const newUser = await User.create({ username, password })
+    if (newUser) {
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN
+      })
+      return res.json({ success: true, error: null, token })
+    }
+
+    return res.json({ success: false, error: "User cannot be created at this time" })
+
+  } catch(err) {
+    console.error('ooops', err)
+  }
 })
 
 module.exports = apiRouter
