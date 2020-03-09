@@ -2,15 +2,27 @@ const jwt = require('jsonwebtoken')
 const User = require("../models/user")
 const apiRouter = require('express').Router()
 
+const getToken = id => jwt.sign({ id }, process.env.JWT_SECRET, {
+  expiresIn: process.env.JWT_EXPIRES_IN
+})
+
 apiRouter.post('/login', async (req, res) => {
   const { username, password } = req.body
-  User.findOne({ username, password })
-    .then(user => {
-      let success = !!user
-      const error = success ? null : "Sorry, we couldn't find a match"
-      res.json({ success, error })
-    })
-    .catch(err => console.log('ooops', err))
+
+  try {
+    const user = await User.findOne({ username }).select('+password')
+
+    if (!user) {
+      res.json({ success: false, error: "Username or Password is incorrect" })
+    } else if (!(await user.passwordMatch(password, user.password))) {
+      res.json({ success: false, error: "Username or Password is incorrect" })
+    } else {
+      const token = getToken(user._id)
+      res.json({ success: true, token: token, error: null })
+    }
+  } catch(err) {
+    console.error('err is', err)
+  }
 })
 
 apiRouter.post('/signup', async (req, res) => {
@@ -24,9 +36,7 @@ apiRouter.post('/signup', async (req, res) => {
 
     const newUser = await User.create({ username, password })
     if (newUser) {
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN
-      })
+      const token = getToken(newUser._id)
       return res.json({ success: true, error: null, token })
     }
 
