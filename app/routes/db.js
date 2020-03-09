@@ -3,29 +3,39 @@ const settings = require("../models/settings")
 const apiRouter = require('express').Router()
 
 apiRouter.get('/recentMeals', async (req, res) => {
-  meal.find()
-    .then(meals => res.json(meals))
-    .catch(err => console.log('ooops', err))
+  const { userId } = req.query
+
+  try {
+    const meals = await meal.findAll({ userId })
+    res.json(meals)
+  } catch (err) {
+    console.error(err)
+  }
 })
 
 apiRouter.post('/chosenMeal', async (req, res) => {
-  const { name, id } = req.body
+  const { name, id, userId } = req.body
 
-  meal.create({ name, id })
-    .then(newMeal => res.json(newMeal))
-    .catch(err => console.log('ooops', err))
+  try {
+    const newMeal = await meal.create({ name, id, userId })
+    res.json(newMeal)
+  } catch (err) {
+    console.error(err)
+  }
 })
 
 apiRouter.get('/settings', async (req, res) => {
-  settings.find()
+  const { userId } = req.query
+
+  settings.find({ userId })
     .then(settings => res.json(settings))
     .catch(err => console.log('ooops', err))
 })
 
 apiRouter.post('/settings', async (req, res) => {
-  const { distance, repeatRestaurants } = req.body
+  const { distance, repeatRestaurants, userId } = req.body
 
-  settings.create({ distance, repeatRestaurants })
+  settings.create({ distance, repeatRestaurants, userId })
     .then(settings => res.json(settings))
     .catch(err => console.log('ooops', err))
 })
