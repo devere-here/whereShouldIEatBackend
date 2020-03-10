@@ -14,8 +14,9 @@ mongoose
 
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, GET');
   res.setHeader('Access-Control-Allow-headers', "Origin, X-Requested-With, Content-Type, Accept");
-  next()
+  next();
 })
 
 app.use(bodyParser.json())
